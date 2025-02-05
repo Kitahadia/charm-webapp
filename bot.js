@@ -92,4 +92,6 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Сервер запущен на порту ${port}`);
     console.log('Бот запущен и ожидает команды...');
+}).on('error', (err) => {
+    console.error('Ошибка при запуске сервера:', err);
 });
