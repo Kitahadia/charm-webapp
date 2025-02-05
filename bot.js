@@ -2,25 +2,38 @@ const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const app = express();
 
-// Создаем бота
+// Создаем бота с webhook для продакшена
+const url = 'https://charm-bot.onrender.com';
 const token = '7801887774:AAHhq-alI_ZBntoYHHH5uWEfcJuRb-ms3fo';
-const bot = new TelegramBot(token, {polling: true});
 
-// Добавляем простой веб-сервер
-const port = process.env.PORT || 3000;
-app.get('/', (req, res) => {
-    res.send('Бот работает!');
+let bot;
+if (process.env.NODE_ENV === 'production') {
+    bot = new TelegramBot(token, {
+        webHook: {
+            port: process.env.PORT || 10000
+        }
+    });
+    bot.setWebHook(`${url}/bot${token}`);
+} else {
+    bot = new TelegramBot(token, {polling: true});
+}
+
+// Обработка webhook
+app.post(`/bot${token}`, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
 });
 
-app.listen(port, () => {
-    console.log(`Сервер запущен на порту ${port}`);
+// Простой эндпоинт для проверки
+app.get('/', (req, res) => {
+    res.send('Бот работает!');
 });
 
 // Обработка команды /start
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
+    console.log('Получена команда /start от:', chatId);
     
-    // Создаем клавиатуру с веб-приложением
     const keyboard = {
         reply_markup: {
             keyboard: [[{
@@ -31,7 +44,9 @@ bot.onText(/\/start/, (msg) => {
         }
     };
     
-    bot.sendMessage(chatId, 'Добро пожаловать в Charm! Нажмите кнопку ниже, чтобы открыть приложение:', keyboard);
+    bot.sendMessage(chatId, 'Добро пожаловать в Charm! Нажмите кнопку ниже, чтобы открыть приложение:', keyboard)
+        .then(() => console.log('Сообщение отправлено успешно'))
+        .catch(error => console.error('Ошибка при отправке:', error));
 });
 
 // Обработка команды /stop
@@ -67,6 +82,11 @@ bot.on('web_app_data', async (msg) => {
 // Обработка ошибок
 bot.on('polling_error', (error) => {
     console.error('Ошибка polling:', error);
+});
+
+const port = process.env.PORT || 10000;
+app.listen(port, () => {
+    console.log(`Сервер запущен на порту ${port}`);
 });
 
 // Запуск бота
