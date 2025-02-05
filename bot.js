@@ -12,7 +12,7 @@ bot.onText(/\/start/, (msg) => {
         reply_markup: {
             keyboard: [[{
                 text: "Открыть Charm",
-                web_app: {url: 'https://your-domain.com'} // Замените на ваш домен
+                web_app: {url: 'https://kitahadia.github.io/charm-webapp'} // Укажите URL где размещены ваши файлы
             }]],
             resize_keyboard: true
         }

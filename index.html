@@ -71,33 +71,10 @@
         </div>
     </div>
 
-    <div class="brands-section">
-        <div class="section-content">
-            <h2>Для брендов</h2>
-            <p>Персональные предложения для компаний</p>
-            <button class="button">Подробнее</button>
-        </div>
-        <img src="assets/brands.webp" alt="Для брендов">
-    </div>
-
-    <div class="join-section">
-        <div class="section-content">
-            <h2>Стань частью Millida</h2>
-            <p>Мы всегда рады новым талантам</p>
-            <button class="button">Подробнее</button>
-        </div>
-        <img src="assets/join.webp" alt="Присоединяйтесь к команде">
-    </div>
-
     <script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрываем на весь экран
-        
-        // Устанавливаем тему в соответствии с темой Telegram
+        tg.expand();
         document.documentElement.setAttribute('data-theme', tg.colorScheme);
-        
-        // Обработчик изменения темы в Telegram
         tg.onEvent('themeChanged', () => {
             document.documentElement.setAttribute('data-theme', tg.colorScheme);
         });
