@@ -1,5 +1,5 @@
 {
-  "name": "charm-webapp",
+  "name": "charm-bot",
   "version": "1.0.0",
   "description": "Telegram bot for Charm web application",
   "main": "bot.js",
