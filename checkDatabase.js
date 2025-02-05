@@ -18,12 +18,5 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
     }
 });
 
-db.all('SELECT * FROM users', [], (err, rows) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Все пользователи:', rows);
-});
-
 // Закрываем базу данных
 db.close(); 
