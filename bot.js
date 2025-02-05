@@ -63,7 +63,7 @@ bot.onText(/\/stop/, (msg) => {
 bot.on('web_app_data', async (msg) => {
     try {
         const chatId = msg.chat.id;
-        console.log('Получены данные от веб-приложения:', msg.web_app_data); // Добавляем лог
+        console.log('Получены данные от веб-приложения:', msg.web_app_data);
         
         const data = JSON.parse(msg.web_app_data.data);
         
