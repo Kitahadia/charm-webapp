@@ -1,0 +1,11 @@
+{
+  "name": "Charm Skins",
+  "short_name": "Charm",
+  "version": "1.0.0",
+  "description": "Персональные образы из Skins",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#00E1B9",
+  "orientation": "portrait"
+} 
