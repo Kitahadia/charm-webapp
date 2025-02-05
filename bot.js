@@ -73,13 +73,6 @@ bot.onText(/\/start/, (msg) => {
         .catch(error => console.error('Ошибка при отправке:', error));
 });
 
-// Обработка команды /stop
-bot.onText(/\/stop/, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Бот остановлен.');
-    process.exit(); // Завершает процесс бота
-});
-
 // Обработка данных от веб-приложения
 bot.on('web_app_data', async (msg) => {
     try {
