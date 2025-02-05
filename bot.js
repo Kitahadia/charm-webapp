@@ -10,7 +10,7 @@ let bot;
 if (process.env.NODE_ENV === 'production') {
     bot = new TelegramBot(token, {
         webHook: {
-            port: process.env.PORT
+            port: process.env.PORT || 3000
         }
     });
     bot.setWebHook(`${url}/bot${token}`);
