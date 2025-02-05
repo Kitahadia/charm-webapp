@@ -11,8 +11,21 @@ const PORT = process.env.PORT || 8080;
 
 let bot;
 if (process.env.NODE_ENV === 'production') {
-    bot = new TelegramBot(token);  // Убираем настройку порта из конструктора
-    bot.setWebHook(`${url}/bot${token}`);
+    // В продакшене используем webhook без указания порта
+    bot = new TelegramBot(token, {
+        webHook: {
+            host: '0.0.0.0'
+        }
+    });
+    
+    // Удаляем старый webhook перед установкой нового
+    bot.deleteWebHook().then(() => {
+        return bot.setWebHook(`${url}/bot${token}`);
+    }).then(() => {
+        console.log('Webhook установлен успешно');
+    }).catch((error) => {
+        console.error('Ошибка при установке webhook:', error);
+    });
 } else {
     bot = new TelegramBot(token, {polling: true});
 }
