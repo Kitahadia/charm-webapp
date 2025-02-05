@@ -10,13 +10,16 @@ let bot;
 if (process.env.NODE_ENV === 'production') {
     bot = new TelegramBot(token, {
         webHook: {
-            port: process.env.PORT || 10000
+            port: process.env.PORT
         }
     });
     bot.setWebHook(`${url}/bot${token}`);
 } else {
     bot = new TelegramBot(token, {polling: true});
 }
+
+// Добавляем парсер JSON для webhook
+app.use(express.json());
 
 // Обработка webhook
 app.post(`/bot${token}`, (req, res) => {
@@ -84,10 +87,9 @@ bot.on('polling_error', (error) => {
     console.error('Ошибка polling:', error);
 });
 
-const port = process.env.PORT || 10000;
+// Запускаем сервер на порту из переменной окружения
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Сервер запущен на порту ${port}`);
+    console.log('Бот запущен и ожидает команды...');
 });
-
-// Запуск бота
-console.log('Бот запущен и ожидает команды...');
