@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
-const { initDatabase, addUser } = require('./database');
+const { initDatabase, addUser, getAllUsers } = require('./database');
 const app = express();
 
 // Создаем бота с webhook для продакшена
@@ -29,6 +29,13 @@ if (process.env.NODE_ENV === 'production') {
 
 // Инициализируем базу данных
 initDatabase();
+
+// После инициализации базы данных
+getAllUsers().then(users => {
+    console.log('Все пользователи:', users);
+}).catch(err => {
+    console.error('Ошибка при получении пользователей:', err);
+});
 
 // Обработка команды /start
 bot.onText(/\/start/, (msg) => {
