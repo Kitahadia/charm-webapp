@@ -11,18 +11,21 @@ const PORT = process.env.PORT || 8080;
 
 let bot;
 if (process.env.NODE_ENV === 'production') {
-    // В продакшене используем webhook без указания порта
-    bot = new TelegramBot(token, {
-        webHook: {
-            host: '0.0.0.0'
-        }
-    });
+    bot = new TelegramBot(token);
     
-    // Удаляем старый webhook перед установкой нового
+    // Сначала удалим старый webhook
     bot.deleteWebHook().then(() => {
-        return bot.setWebHook(`${url}/bot${token}`);
+        // Устанавливаем новый webhook с расширенными опциями
+        return bot.setWebHook(`${url}/bot${token}`, {
+            max_connections: 40,
+            drop_pending_updates: true
+        });
     }).then(() => {
-        console.log('Webhook установлен успешно');
+        console.log('Webhook установлен успешно на:', `${url}/bot${token}`);
+        // Проверяем информацию о webhook
+        return bot.getWebHookInfo();
+    }).then((info) => {
+        console.log('Webhook info:', info);
     }).catch((error) => {
         console.error('Ошибка при установке webhook:', error);
     });
@@ -33,10 +36,16 @@ if (process.env.NODE_ENV === 'production') {
 // Добавляем парсер JSON для webhook
 app.use(express.json());
 
-// Обработка webhook
+// Добавим больше логирования
 app.post(`/bot${token}`, (req, res) => {
+    console.log('Получен webhook запрос:', req.body);
     bot.processUpdate(req.body);
     res.sendStatus(200);
+});
+
+// Добавим обработку всех сообщений для отладки
+bot.on('message', (msg) => {
+    console.log('Получено сообщение:', msg);
 });
 
 // Простой эндпоинт для проверки
