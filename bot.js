@@ -6,11 +6,14 @@ const app = express();
 const url = 'https://charm-bot.onrender.com';
 const token = '7801887774:AAHhq-alI_ZBntoYHHH5uWEfcJuRb-ms3fo';
 
+// Определяем порт один раз в начале файла
+const PORT = process.env.PORT || 8080;
+
 let bot;
 if (process.env.NODE_ENV === 'production') {
     bot = new TelegramBot(token, {
         webHook: {
-            port: process.env.PORT || 8080
+            port: PORT
         }
     });
     bot.setWebHook(`${url}/bot${token}`);
@@ -88,9 +91,8 @@ bot.on('polling_error', (error) => {
 });
 
 // Запускаем сервер на порту из переменной окружения
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-    console.log(`Сервер запущен на порту ${port}`);
+app.listen(PORT, () => {
+    console.log(`Сервер запущен на порту ${PORT}`);
     console.log('Бот запущен и ожидает команды...');
 }).on('error', (err) => {
     console.error('Ошибка при запуске сервера:', err);
