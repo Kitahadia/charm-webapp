@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
+const { initDatabase, addUser } = require('./database');
 const app = express();
 
 // Создаем бота с webhook для продакшена
@@ -15,17 +16,10 @@ if (process.env.NODE_ENV === 'production') {
     
     // Сначала удалим старый webhook
     bot.deleteWebHook().then(() => {
-        // Устанавливаем новый webhook с расширенными опциями
-        return bot.setWebHook(`${url}/bot${token}`, {
-            max_connections: 40,
-            drop_pending_updates: true
-        });
+        // Устанавливаем новый webhook
+        return bot.setWebHook(`${url}/bot${token}`);
     }).then(() => {
         console.log('Webhook установлен успешно на:', `${url}/bot${token}`);
-        // Проверяем информацию о webhook
-        return bot.getWebHookInfo();
-    }).then((info) => {
-        console.log('Webhook info:', info);
     }).catch((error) => {
         console.error('Ошибка при установке webhook:', error);
     });
@@ -33,78 +27,31 @@ if (process.env.NODE_ENV === 'production') {
     bot = new TelegramBot(token, {polling: true});
 }
 
-// Добавляем парсер JSON для webhook
-app.use(express.json());
-
-// Добавим больше логирования
-app.post(`/bot${token}`, (req, res) => {
-    console.log('Получен webhook запрос:', req.body);
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
-});
-
-// Добавим обработку всех сообщений для отладки
-bot.on('message', (msg) => {
-    console.log('Получено сообщение:', msg);
-});
-
-// Простой эндпоинт для проверки
-app.get('/', (req, res) => {
-    res.send('Бот работает!');
-});
+// Инициализируем базу данных
+initDatabase();
 
 // Обработка команды /start
 bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    console.log('Получена команда /start от:', chatId);
-    
-    const keyboard = {
-        reply_markup: {
-            keyboard: [[{
-                text: "Открыть Charm",
-                web_app: {url: 'https://kitahadia.github.io/charm-webapp'}
-            }]],
-            resize_keyboard: true
-        }
+    const user = {
+        chat_id: msg.chat.id,
+        username: msg.chat.username || 'Не указано',
+        first_name: msg.chat.first_name || 'Не указано',
+        last_name: msg.chat.last_name || 'Не указано'
     };
     
-    bot.sendMessage(chatId, 'Добро пожаловать в Charm! Нажмите кнопку ниже, чтобы открыть приложение:', keyboard)
-        .then(() => console.log('Сообщение отправлено успешно'))
-        .catch(error => console.error('Ошибка при отправке:', error));
+    // Сохраняем пользователя в базу данных
+    addUser(user);
+    console.log('Пользователь сохранен:', user);
 });
 
-// Обработка данных от веб-приложения
-bot.on('web_app_data', async (msg) => {
-    try {
-        const chatId = msg.chat.id;
-        console.log('Получены данные от веб-приложения:', msg.web_app_data);
-        
-        const data = JSON.parse(msg.web_app_data.data);
-        
-        switch(data.action) {
-            case 'order':
-                await bot.sendMessage(chatId, `Заказ ${data.title} оформлен!`);
-                break;
-            case 'info':
-                await bot.sendMessage(chatId, `Информация о ${data.title} отправлена!`);
-                break;
-            default:
-                await bot.sendMessage(chatId, 'Получены данные от веб-приложения');
-        }
-    } catch (error) {
-        console.error('Ошибка при обработке web_app_data:', error);
-    }
-});
-
-// Обработка ошибок
-bot.on('polling_error', (error) => {
-    console.error('Ошибка polling:', error);
+// Обработка webhook запросов
+app.use(express.json());
+app.post(`/bot${token}`, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
 });
 
 // Запускаем express сервер на основном порту
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
-    console.log('Бот запущен и ожидает команды...');
-}).on('error', (err) => {
-    console.error('Ошибка при запуске сервера:', err);
 });
