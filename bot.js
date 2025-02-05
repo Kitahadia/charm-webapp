@@ -11,11 +11,7 @@ const PORT = process.env.PORT || 8080;
 
 let bot;
 if (process.env.NODE_ENV === 'production') {
-    bot = new TelegramBot(token, {
-        webHook: {
-            port: 8443
-        }
-    });
+    bot = new TelegramBot(token);  // Убираем настройку порта из конструктора
     bot.setWebHook(`${url}/bot${token}`);
 } else {
     bot = new TelegramBot(token, {polling: true});
