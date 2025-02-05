@@ -1,0 +1,22 @@
+.nav {
+    background-color: #fff;
+    padding: 10px;
+}
+
+.main-title {
+    font-size: 24px;
+    text-align: center;
+}
+
+.cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+}

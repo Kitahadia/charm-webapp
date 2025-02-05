@@ -1,12 +1,12 @@
 {
-  "name": "charm-bot",
+  "name": "charm-webapp",
   "version": "1.0.0",
-  "description": "Telegram bot for Charm WebApp",
-  "main": "bot.js",
+  "description": "Telegram bot for Charm web application",
+  "main": "src/bot.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node src/bot.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.61.0"
+    "node-telegram-bot-api": "^0.50.0"
   }
-} 
+}
