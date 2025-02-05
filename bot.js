@@ -13,7 +13,7 @@ let bot;
 if (process.env.NODE_ENV === 'production') {
     bot = new TelegramBot(token, {
         webHook: {
-            port: PORT
+            port: 8443
         }
     });
     bot.setWebHook(`${url}/bot${token}`);
@@ -90,7 +90,7 @@ bot.on('polling_error', (error) => {
     console.error('Ошибка polling:', error);
 });
 
-// Запускаем сервер на порту из переменной окружения
+// Запускаем express сервер на основном порту
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
     console.log('Бот запущен и ожидает команды...');
