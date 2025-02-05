@@ -3,4 +3,7 @@ services:
     name: charm-bot
     env: node
     buildCommand: npm install
-    startCommand: node bot.js 
+    startCommand: node bot.js
+    envVars:
+      - key: PORT
+        value: 10000 

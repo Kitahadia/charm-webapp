@@ -1,30 +1,37 @@
 const TelegramBot = require('node-telegram-bot-api');
+const express = require('express');
+const app = express();
 
-// Используем токен из переменных окружения
-const token = process.env.BOT_TOKEN || '7801887774:AAHhq-alI_ZBntoYHHH5uWEfcJuRb-ms3fo';
+// Создаем бота
+const token = '7801887774:AAHhq-alI_ZBntoYHHH5uWEfcJuRb-ms3fo';
 const bot = new TelegramBot(token, {polling: true});
 
+// Добавляем простой веб-сервер
+const port = process.env.PORT || 3000;
+app.get('/', (req, res) => {
+    res.send('Бот работает!');
+});
+
+app.listen(port, () => {
+    console.log(`Сервер запущен на порту ${port}`);
+});
+
 // Обработка команды /start
-bot.onText(/\/start/, async (msg) => {
-    try {
-        const chatId = msg.chat.id;
-        console.log('Получена команда /start от:', chatId); // Добавляем лог
-        
-        const keyboard = {
-            reply_markup: {
-                keyboard: [[{
-                    text: "Открыть Charm",
-                    web_app: {url: 'https://kitahadia.github.io/charm-webapp'}
-                }]],
-                resize_keyboard: true
-            }
-        };
-        
-        await bot.sendMessage(chatId, 'Добро пожаловать в Charm! Нажмите кнопку ниже, чтобы открыть приложение:', keyboard);
-        console.log('Сообщение отправлено успешно'); // Добавляем лог
-    } catch (error) {
-        console.error('Ошибка при обработке /start:', error);
-    }
+bot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+    
+    // Создаем клавиатуру с веб-приложением
+    const keyboard = {
+        reply_markup: {
+            keyboard: [[{
+                text: "Открыть Charm",
+                web_app: {url: 'https://kitahadia.github.io/charm-webapp'}
+            }]],
+            resize_keyboard: true
+        }
+    };
+    
+    bot.sendMessage(chatId, 'Добро пожаловать в Charm! Нажмите кнопку ниже, чтобы открыть приложение:', keyboard);
 });
 
 // Обработка команды /stop
@@ -62,5 +69,5 @@ bot.on('polling_error', (error) => {
     console.error('Ошибка polling:', error);
 });
 
-// Показываем, что бот запущен
+// Запуск бота
 console.log('Бот запущен и ожидает команды...');
