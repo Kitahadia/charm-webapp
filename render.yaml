@@ -6,4 +6,4 @@ services:
     startCommand: NODE_ENV=production node bot.js
     envVars:
       - key: PORT
-        value: 3000 
+        value: 10000 
