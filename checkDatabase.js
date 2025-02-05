@@ -1,19 +1,21 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const db = new sqlite3.Database(path.join(__dirname, 'users.db'), (err) => {
-    if (err) {
-        console.error('Ошибка при открытии базы данных:', err.message);
-    } else {
-        console.log('База данных успешно открыта.');
-    }
-});
+const db = new sqlite3.Database(path.join(__dirname, 'users.db'));
 
-db.all('SELECT * FROM users', [], (err, rows) => {
+db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY,
+    chat_id INTEGER UNIQUE,
+    username TEXT,
+    first_name TEXT,
+    last_name TEXT,
+    join_date DATETIME DEFAULT CURRENT_TIMESTAMP
+)`, (err) => {
     if (err) {
-        throw err;
+        console.error('Ошибка при создании таблицы:', err.message);
+    } else {
+        console.log('Таблица users успешно создана или уже существует.');
     }
-    console.log(rows);
 });
 
 // Закрываем базу данных
